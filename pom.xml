@@ -7,6 +7,11 @@
     <groupId>com.chenxin</groupId>
     <artifactId>Netty</artifactId>
     <version>1.0-SNAPSHOT</version>
-
-    
+    <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>25.0-jre</version>
+        </dependency>
+    </dependencies>
 </project>

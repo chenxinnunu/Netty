@@ -11,6 +11,7 @@ import java.net.Socket;
  */
 public class TimeServer {
     public static void main(String[] args) throws IOException {
+
         int port = 8080;
         if (args != null && args.length > 0) {
             try {
@@ -18,9 +19,10 @@ public class TimeServer {
             } catch (NumberFormatException e) {
                 //如果没有入参，采用默认值8080
             }
+        }
             ServerSocket server = null;
             try {
-                server = new ServerSocket();
+                server = new ServerSocket(port);
                 System.out.println("The time server is start in port :" + port);
                 Socket socket = null;
                 while (true) {
@@ -36,6 +38,5 @@ public class TimeServer {
                     server = null;
                 }
             }
-        }
     }
 }

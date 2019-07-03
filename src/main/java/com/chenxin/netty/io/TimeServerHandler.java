@@ -16,6 +16,7 @@ public class TimeServerHandler implements Runnable {
     public TimeServerHandler(Socket socket) {
         this.socket = socket;
     }
+    @Override
     public void run() {
         BufferedReader in = null;
         PrintWriter out = null;
