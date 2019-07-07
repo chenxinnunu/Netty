@@ -14,6 +14,7 @@ public class TimeServer {
                 //使用默认值
             }
         }
-
+        MultiplexerTimeServer timeServer = new MultiplexerTimeServer(port);
+        new Thread(timeServer, "NIO-MultiplexerTimeServer-001").start();
     }
 }
