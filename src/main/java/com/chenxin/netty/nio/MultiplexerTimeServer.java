@@ -19,7 +19,7 @@ public class MultiplexerTimeServer implements Runnable {
 
     private Selector selector;
 
-    private ServerSocketChannel serverChannel;
+    private ServerSocketChannel servChannel;
 
     private volatile boolean stop;
 
@@ -31,18 +31,20 @@ public class MultiplexerTimeServer implements Runnable {
 
     public MultiplexerTimeServer(int port) {
         try {
-            //打开ServerSocketChannel，监听客户端的连接，它是所有客户端连接的父管道
-            serverChannel = ServerSocketChannel.open();
-
-            //绑定监听端口，设置连接为异步非阻塞模式，他的backlog为1024
-            serverChannel.socket().bind(new InetSocketAddress(port), 1024);
-            serverChannel.configureBlocking(false);
-
             //开启多路复用器
             selector = Selector.open();
 
+            //打开ServerSocketChannel，监听客户端的连接，它是所有客户端连接的父管道
+            servChannel = ServerSocketChannel.open();
+            servChannel.configureBlocking(false);
+
+            //绑定监听端口，设置连接为异步非阻塞模式，他的backlog为1024
+            servChannel.socket().bind(new InetSocketAddress(port), 1024);
+
+
+
             //将ServerSocketChannel注册到Selector，监听SelectionKey.OP_ACCEPT位，如果失败则退出
-            serverChannel.register(selector, SelectionKey.OP_ACCEPT);
+            servChannel.register(selector, SelectionKey.OP_ACCEPT);
 
             System.out.println("The time server is start in : " + port);
         } catch (IOException e) {
@@ -66,11 +68,11 @@ public class MultiplexerTimeServer implements Runnable {
             try {
                 selector.select(1000);
                 Set<SelectionKey> selectionKeys = selector.selectedKeys();
-                Iterator<SelectionKey> iterator = selectionKeys.iterator();
+                Iterator<SelectionKey> it = selectionKeys.iterator();
                 SelectionKey key = null;
-                while (iterator.hasNext()) {
-                    key = iterator.next();
-                    iterator.remove();
+                while (it.hasNext()) {
+                    key = it.next();
+                    it.remove();
                     try {
                         handleInput(key);
                     } catch (IOException e) {
@@ -135,9 +137,9 @@ public class MultiplexerTimeServer implements Runnable {
                     byte[] bytes = new byte[readBuffer.remaining()];
                     readBuffer.get(bytes);
                     //byte[]转为String
-                    String body = bytes.toString();
+                    String body = new String(bytes, "UTF-8");
                     System.out.println("The time server receive order : " + body);
-                    String currentTime = "QUERY THE ORDER".equalsIgnoreCase(body)
+                    String currentTime = "QUERY TIME ORDER".equalsIgnoreCase(body)
                             ? new Date(System.currentTimeMillis()).toString() : "BAD ORDER";
                     doWrite(sc, currentTime);
                 } else if (readBytes < 0) {
