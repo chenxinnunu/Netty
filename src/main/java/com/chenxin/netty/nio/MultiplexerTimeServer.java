@@ -36,9 +36,10 @@ public class MultiplexerTimeServer implements Runnable {
 
             //打开ServerSocketChannel，监听客户端的连接，它是所有客户端连接的父管道
             servChannel = ServerSocketChannel.open();
+            //设置为非阻塞模式
             servChannel.configureBlocking(false);
 
-            //绑定监听端口，设置连接为异步非阻塞模式，他的backlog为1024
+            //绑定监听端口，他的backlog为1024
             servChannel.socket().bind(new InetSocketAddress(port), 1024);
 
             //将ServerSocketChannel注册到Selector，监听SelectionKey.OP_ACCEPT位，如果失败则退出
@@ -55,6 +56,7 @@ public class MultiplexerTimeServer implements Runnable {
         this.stop = true;
     }
 
+    //独立的I/O线程，用于轮询多路复用器Selector
     @Override
     public void run() {
           /*
