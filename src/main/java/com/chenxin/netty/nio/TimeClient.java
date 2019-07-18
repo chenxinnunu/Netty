@@ -15,6 +15,6 @@ public class TimeClient {
                 //用默认值
             }
         }
-        new Thread(new TimeClientHandle("172.0.0.1", port), "TimeClient-001").start();
+        new Thread(new TimeClientHandle(port), "TimeClient-001").start();
     }
 }

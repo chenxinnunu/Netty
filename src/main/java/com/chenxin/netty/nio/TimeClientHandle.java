@@ -14,14 +14,12 @@ import java.util.Set;
  * @date 2019/07/07
  */
 public class TimeClientHandle implements Runnable {
-    private String host;
     private int port;
     private Selector selector;
     private SocketChannel socketChannel;
     private volatile boolean stop;
 
-    public TimeClientHandle(String host, int port) {
-        this.host = host == null ? "127.0.0.1" : host;
+    public TimeClientHandle(int port) {
         this.port = port;
 
         try {
@@ -93,7 +91,8 @@ public class TimeClientHandle implements Runnable {
                     //连接失败，进程退出
                     System.exit(1);
                 }
-                if (key.isReadable()) {
+                //这里有问题，key.isReadable一直返回false，不知道其原由
+               if (key.isReadable()) {
                     ByteBuffer readBuffer = ByteBuffer.allocate(1024);
                     int readBytes = sc.read(readBuffer);
                     if (readBytes > 0) {
@@ -118,7 +117,8 @@ public class TimeClientHandle implements Runnable {
 
     private void doConnect() throws IOException {
         //如果连接成功，则注册到多路复用器上，发送请求消息，读应答
-        if (socketChannel.connect(new InetSocketAddress(host, port))) {
+        boolean connect = socketChannel.connect(new InetSocketAddress(port));
+        if (connect) {
             socketChannel.register(selector, SelectionKey.OP_READ);
             doWrite(socketChannel);
         } else {
